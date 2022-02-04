@@ -1,16 +1,29 @@
 <template>
   <div class="card">
     <!-- UserFollowersCard -->
-    <div class="card-header"><strong>1</strong> followers (追隨者)</div>
+    <div class="card-header">
+      <strong>{{ followers.length }}</strong> followers (追隨者)
+    </div>
     <div class="card-body">
-      <a href="/users/1">
-        <img
-          src="https://via.placeholder.com/60"
-          width="60"
-          height="60"
-          class="avatar"
-        />
-      </a>
+      <router-link
+        :to="{ name: 'user', params: { id: follower.id } }"
+        class="mr-1"
+        v-for="follower in followers"
+        :key="follower.id"
+      >
+        <img :src="follower.image" width="60" height="60" class="avatar" />
+      </router-link>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    followers: {
+      type: Array,
+      required: true,
+    },
+  },
+};
+</script>

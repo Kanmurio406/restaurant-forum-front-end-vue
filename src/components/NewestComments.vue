@@ -10,9 +10,9 @@
         </h4>
         <p>{{ comment.text }}</p>
         by
-        <a href="#">
+        <router-link :to="{ name: 'user', params: { id: comment.User.id } }">
           {{ comment.User ? comment.User.name : "無使用者名稱" }}
-        </a>
+        </router-link>
         {{ comment.createdAt | fromNow }}
         <hr />
       </div>

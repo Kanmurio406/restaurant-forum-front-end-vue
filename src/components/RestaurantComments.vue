@@ -13,7 +13,9 @@
           Delete
         </button>
         <h3>
-          <a href="#"> {{ comment.User.name }} </a>
+          <router-link :to="{ name: 'user', params: { id: comment.User.id } }">
+            {{ comment.User.name }}
+          </router-link>
         </h3>
         <p>{{ comment.text }}</p>
         <footer class="blockquote-footer">
@@ -53,12 +55,12 @@ export default {
   },
   mixins: [fromNowFilter],
   methods: {
-    handleDeleteButtonClick (commentId) {
-      console.log('handleDeleteButtonClick', commentId)
+    handleDeleteButtonClick(commentId) {
+      console.log("handleDeleteButtonClick", commentId);
       // TODO: 請求 API 伺服器刪除 id 為 commentId 的評論
       // 觸發父層事件 - $emit( '事件名稱' , 傳遞的資料 )
-      this.$emit('after-delete-comment', commentId)
-    }
-  }
+      this.$emit("after-delete-comment", commentId);
+    },
+  },
 };
 </script>

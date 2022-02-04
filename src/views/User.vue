@@ -4,23 +4,29 @@
       <div class="container">
         <div class="card mb-3">
           <!-- User Profile Card -->
-          <UserProfileCard />
+          <UserProfileCard
+            :profile="profile"
+            :initial-is-followed="isFollowed"
+            :current-user-id="currentUserId"
+          />
         </div>
 
         <div class="row">
           <div class="col-md-4">
             <!-- UserFollowingsCard -->
-            <UserFollowingsCard />
+            <UserFollowingsCard :followings="followings" />
             <br />
             <!-- UserFollowersCard -->
-            <UserFollowersCard />
+            <UserFollowersCard :followers="followers" />
           </div>
           <div class="col-md-8">
             <!-- UserCommentsCard -->
-            <UserCommentsCard />
+            <UserCommentsCard :comments="comments" />
             <br />
             <!-- UserFavoritedRestaurantsCard -->
-            <UserFavoritedRestaurantsCard />
+            <UserFavoritedRestaurantsCard
+              :favorited-restaurants="favoritedRestaurants"
+            />
           </div>
         </div>
       </div>
@@ -1292,14 +1298,69 @@ const dummyData = {
   },
   isFollowed: false,
 };
+const dummyUser = {
+  currentUser: {
+    id: 1,
+    name: "root",
+    email: "root@example.com",
+    image: null,
+    isAdmin: true,
+  },
+  isAuthenticated: true,
+};
 
 export default {
+  name: "User",
   components: {
     UserProfileCard,
     UserFollowingsCard,
     UserFollowersCard,
     UserCommentsCard,
     UserFavoritedRestaurantsCard,
+  },
+  data() {
+    return {
+      profile: {
+        id: -1,
+        name: "",
+        email: "",
+        image: "https://i.imgur.com/58ImzMM.png",
+        commentsLength: -1,
+        favoritedRestaurantsLength: -1,
+        followersLength: -1,
+        followingsLength: -1,
+      },
+      isFollowed: false,
+      comments: [],
+      favoritedRestaurants: [],
+      followers: [],
+      followings: [],
+      currentUserId: dummyUser.currentUser.id,
+    };
+  },
+  created() {
+    this.fetchUser();
+  },
+  methods: {
+    fetchUser() {
+      // 不會做資料更改，因此直接將dummyData的資料引入
+      (this.profile = {
+        id: dummyData.profile.id,
+        name: dummyData.profile.name,
+        email: dummyData.profile.email,
+        image: dummyData.profile.image,
+        commentsLength: dummyData.profile.Comments.length,
+        favoritedRestaurantsLength:
+          dummyData.profile.FavoritedRestaurants.length,
+        followersLength: dummyData.profile.Followers.length,
+        followingsLength: dummyData.profile.Followings.length,
+      }),
+        (this.isFollowed = dummyData.isFollowed);
+      this.comments = dummyData.profile.Comments;
+      this.favoritedRestaurants = dummyData.profile.FavoritedRestaurants;
+      this.followers = dummyData.profile.Followers;
+      this.followings = dummyData.profile.Followings;
+    },
   },
 };
 </script>

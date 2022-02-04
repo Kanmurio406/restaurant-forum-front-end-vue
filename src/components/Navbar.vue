@@ -2,12 +2,7 @@
 
 <template>
   <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-    <router-link
-      class="navbar-brand"
-      to="/"
-    >
-      餐廳評論網
-    </router-link>
+    <router-link class="navbar-brand" to="/"> 餐廳評論網 </router-link>
 
     <button
       class="navbar-toggler"
@@ -21,33 +16,26 @@
       <span class="navbar-toggler-icon" />
     </button>
 
-    <div
-      id="navbarSupportedContent" 
-      class="navbar-collapse collapse"
-    >
+    <div id="navbarSupportedContent" class="navbar-collapse collapse">
       <div class="ml-auto d-flex align-items-center">
         <!-- is user is admin -->
-        <router-link
-             v-if="currentUser.isAdmin"
-             to="#" 
-             class="text-white mr-3"
-        >
-         管理員後台
-       </router-link>
+        <router-link v-if="currentUser.isAdmin" to="#" class="text-white mr-3">
+          管理員後台
+        </router-link>
 
         <!-- is user is login -->
         <template v-if="isAuthenticated">
           <router-link
-             to="#" 
-             class="text-white mr-3"
-          > 
-           {{ currentUser.name || 使用者 }} 您好
-         </router-link>
-         <button
-           type="button" 
-           class="btn btn-sm btn-outline-success my-2 my-sm-0"
+            :to="{ name: 'user', params: { id: currentUser.id } }"
+            class="text-white mr-3"
           >
-           登出
+            {{ currentUser.name || 使用者 }} 您好
+          </router-link>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-success my-2 my-sm-0"
+          >
+            登出
           </button>
         </template>
       </div>
@@ -61,40 +49,40 @@
 const dummyUser = {
   currentUser: {
     id: 1,
-    name: '管理者',
-    email: 'root@example.com',
-    image: 'https://i.pravatar.cc/300',
-    isAdmin: true
+    name: "管理者",
+    email: "root@example.com",
+    image: "https://i.pravatar.cc/300",
+    isAdmin: true,
   },
-  isAuthenticated: true
-}
+  isAuthenticated: true,
+};
 
 export default {
   // Vue 會在沒有資料時使用此預設值
-  data () {
+  data() {
     return {
       currentUser: {
         id: -1,
-        name: '',
-        email: '',
-        image: '',
-        isAdmin: false
+        name: "",
+        email: "",
+        image: "",
+        isAdmin: false,
       },
-      isAuthenticated: false
-    }
+      isAuthenticated: false,
+    };
   },
   methods: {
     // 會向後端API拉取資料
     fetchUser() {
       this.currentUser = {
         ...this.currentUser,
-        ...dummyUser.currentUser
-      }
-      this.isAuthenticated = dummyUser.isAuthenticated
-    }
+        ...dummyUser.currentUser,
+      };
+      this.isAuthenticated = dummyUser.isAuthenticated;
+    },
   },
   created() {
     this.fetchUser();
-  }
-}
+  },
+};
 </script>
