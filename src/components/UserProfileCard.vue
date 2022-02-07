@@ -27,8 +27,11 @@
         </ul>
         <p></p>
         <form v-if="checkCurrentUser" action="">
-          <!-- 尚無edit頁面因此先disabled -->
-          <button type="submit" class="btn btn-primary" disabled>Edit</button>
+          <router-link :to="{ name: 'user-edit', params: { id: routeUserId } }"
+            ><button type="button" class="btn btn-primary">
+              Edit
+            </button></router-link
+          >
         </form>
         <form
           v-else
@@ -71,6 +74,11 @@ export default {
       required: true,
     },
     currentUserId: {
+      type: Number,
+      required: true,
+    },
+    // get route params id for Edit
+    routeUserId: {
       type: Number,
       required: true,
     },

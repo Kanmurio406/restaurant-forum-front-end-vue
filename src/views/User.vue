@@ -8,6 +8,7 @@
             :profile="profile"
             :initial-is-followed="isFollowed"
             :current-user-id="currentUserId"
+            :route-user-id="routeUserId"
           />
         </div>
 
@@ -1336,13 +1337,19 @@ export default {
       followers: [],
       followings: [],
       currentUserId: dummyUser.currentUser.id,
+      // route params id for Edit
+      routeUserId: -1,
     };
   },
   created() {
-    this.fetchUser();
+    const { id } = this.$route.params;
+    this.fetchUser(Number(id));
   },
   methods: {
-    fetchUser() {
+    fetchUser(id) {
+      // get route params id for Edit
+      console.log("routeUserId: ", id);
+      this.routeUserId = id;
       // 不會做資料更改，因此直接將dummyData的資料引入
       (this.profile = {
         id: dummyData.profile.id,
