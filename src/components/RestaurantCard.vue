@@ -26,7 +26,7 @@
       </div>
       <div class="card-footer">
         <button
-          @click.stop.prevent="removeFavorited"
+          @click.stop.prevent="removeFavorited(restaurant.id)"
           v-if="restaurant.isFavorited"
           type="button"
           class="btn btn-danger btn-border favorite mr-2"
@@ -34,7 +34,7 @@
           移除最愛
         </button>
         <button
-          @click.stop.prevent="addFavorited"
+          @click.stop.prevent="addFavorited(restaurant.id)"
           v-else
           type="button"
           class="btn btn-primary btn-border favorite mr-2"
@@ -42,7 +42,7 @@
           加到最愛
         </button>
         <button
-          @click.stop.prevent="removeLiked"
+          @click.stop.prevent="removeLiked(restaurant.id)"
           v-if="restaurant.isLiked"
           type="button"
           class="btn btn-danger like mr-2"
@@ -50,7 +50,7 @@
           Unlike
         </button>
         <button
-          @click.stop.prevent="addLiked"
+          @click.stop.prevent="addLiked(restaurant.id)"
           v-else
           type="button"
           class="btn btn-primary like mr-2"
@@ -63,6 +63,9 @@
 </template>
 
 <script>
+import usersAPI from "./../apis/users";
+import { Toast } from "./../utils/helpers";
+
 export default {
   props: {
     initialRestaurant: {
@@ -76,33 +79,82 @@ export default {
     };
   },
   methods: {
-    addFavorited() {
-      // this.restaurant.isFavorited = true;
-      // 直接這樣改的話，initialRestaurant的資料也會被改到，因為指向的儲存位置其實是一樣的
-      this.restaurant = {
-        // 展開並複製this.restaurant，更改isFavorited然後回傳
-        ...this.restaurant,
-        isFavorited: true,
-      };
-      // 展開並複製的做法，可以保留原本initialRestaurant的資料不被改動
+    async addFavorited(restaurantId) {
+      try {
+        const { data } = await usersAPI.addFavorite({ restaurantId });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        // 未串接API前註解
+        // this.restaurant.isFavorited = true;
+        // 直接這樣改的話，initialRestaurant的資料也會被改到，因為指向的儲存位置其實是一樣的
+        this.restaurant = {
+          // 展開並複製this.restaurant，更改isFavorited然後回傳
+          ...this.restaurant,
+          isFavorited: true,
+        };
+        // 展開並複製的做法，可以保留原本initialRestaurant的資料不被改動
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳加入最愛，請稍後再試",
+        });
+        console.log("error", error);
+      }
     },
-    removeFavorited() {
-      this.restaurant = {
-        ...this.restaurant,
-        isFavorited: false,
-      };
+    async removeFavorited(restaurantId) {
+      try {
+        const { data } = await usersAPI.deleteFavorite({ restaurantId });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.restaurant = {
+          ...this.restaurant,
+          isFavorited: false,
+        };
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳移除最愛，請稍後再試",
+        });
+        console.log("error", error);
+      }
     },
-    addLiked() {
-      this.restaurant = {
-        ...this.restaurant,
-        isLiked: true,
-      };
+    async addLiked(restaurantId) {
+      try {
+        const { data } = await usersAPI.addLike({ restaurantId });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.restaurant = {
+          ...this.restaurant,
+          isLiked: true,
+        };
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳加入點讚，請稍後再試",
+        });
+        console.log("error", error);
+      }
     },
-    removeLiked() {
-      this.restaurant = {
-        ...this.restaurant,
-        isLiked: false,
-      };
+    async removeLiked(restaurantId) {
+      try {
+        const { data } = await usersAPI.deleteLike({ restaurantId });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.restaurant = {
+          ...this.restaurant,
+          isLiked: false,
+        };
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳移除點讚，請稍後再試",
+        });
+        console.log("error", error);
+      }
     },
   },
 };

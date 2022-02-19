@@ -16,3 +16,14 @@ export const emptyImageFilter = {
     }
   }
 }
+
+// export const statusCheckMethod = {
+//   methods: {
+//     statusCheck(data) {
+//       if (data.status !== 'success') {
+//         throw new Error(data.message)
+//         console.log('error')
+//       }
+//     }
+//   }
+// }

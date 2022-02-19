@@ -89,37 +89,9 @@
 
 <script>
 import AdminNav from "@/components/AdminNav";
-import { v4 as uuidv4 } from "uuid";
-
-//  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 2,
-      name: "日本料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-  ],
-};
+// import { v4 as uuidv4 } from "uuid";
+import adminAPI from "./../apis/admin";
+import { Toast } from "./../utils/helpers";
 
 export default {
   components: {
@@ -138,36 +110,63 @@ export default {
   },
   methods: {
     // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories() {
-      this.categories = dummyData.categories;
-      // 在每一個 category 中都添加一個 isEditing 屬性
-      this.categories = dummyData.categories.map((category) => ({
-        ...category,
-        isEditing: false,
-        nameCached: "",
-      }));
+    async fetchCategories() {
+      try {
+        const { data } = await adminAPI.categories.get();
+        this.categories = data.categories;
+        // 在每一個 category 中都添加一個 isEditing 屬性
+        this.categories = data.categories.map((category) => ({
+          ...category,
+          isEditing: false,
+          nameCached: "",
+        }));
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得餐廳類別資料，請稍後再試",
+        });
+      }
     },
-    createCategory() {
-      // TODO: 透過 API 告知伺服器欲新增的餐廳類別...
-
-      // 將新的類別添加到陣列中
-      this.categories.push({
-        id: uuidv4(),
-        name: this.newCategoryName,
-      });
+    async createCategory() {
+      // 透過 API 告知伺服器欲新增的餐廳類別...
+      try {
+        const { data } = await adminAPI.categories.create({
+          name: this.newCategoryName,
+        });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.fetchCategories();
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法建立餐廳類別，請稍後再試",
+        });
+      }
 
       this.newCategoryName = ""; // 清空原本欄位中的內容
     },
-    deleteCategory(categoryId) {
-      // TODO: 透過 API 告知伺服器欲刪除的餐廳類別
-
-      // 將該餐廳類別從陣列中移除
-      this.categories = this.categories.filter(
-        (category) => category.id !== categoryId
-      );
+    async deleteCategory(categoryId) {
+      try {
+        // 透過 API 告知伺服器欲刪除的餐廳類別
+        const { data } = await adminAPI.categories.delete({
+          categoryId,
+        });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.fetchCategories();
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法刪除餐廳類別，請稍後再試",
+        });
+      }
     },
     toggleIsEditing(categoryId) {
       // TODO: 為何不能直接傳入category然後修改isEditing的值？或是直接傳入isEditing做修改？方便修改多個內容包含nameCashed? 可能是和同時修改多個有關？
+      // 原因推論：此方法在updateCategory、handleCancel中也會被呼叫，打api時也是用id，因此用categoryId作為資料傳送，會較單純和符合其他方法的需要
       // category.isEditing = !category.isEditing;
       this.categories = this.categories.map((category) => {
         if (category.id === categoryId) {
@@ -180,8 +179,25 @@ export default {
         return category;
       });
     },
-    updateCategory(categoryId) {
-      // TODO: 透過 API 去向伺服器更新餐廳類別名稱
+    async updateCategory(categoryId) {
+      // 透過 API 去向伺服器更新餐廳類別名稱
+      try {
+        const editingCategory = this.categories.find(
+          (category) => category.id === categoryId
+        );
+        const { data } = await adminAPI.categories.update({
+          categoryId,
+          name: editingCategory.name,
+        });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法更新餐廳類別，請稍後再試",
+        });
+      }
       this.toggleIsEditing(categoryId);
     },
     handleCancel(categoryId) {

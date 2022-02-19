@@ -7,20 +7,16 @@
     <div class="row text-center">
       <div v-for="user in users" :key="user.id" class="col-3">
         <a href="#">
-          <img
-            :src="user.image"
-            width="140px"
-            height="140px"
-          />
+          <img :src="user.image" width="140px" height="140px" />
         </a>
         <h2>{{ user.name }}</h2>
         <span class="badge badge-secondary"
-          >追蹤人數：{{ user.FollowerCount }}</span
+          >追蹤人數：{{ user.followerCount }}</span
         >
         <p class="mt-3">
           <button
             v-if="user.isFollowed"
-            @click.stop.prevent = "stopFollow(user)"
+            @click.stop.prevent="deleteFollowing(user.id)"
             type="button"
             class="btn btn-danger"
           >
@@ -28,7 +24,7 @@
           </button>
           <button
             v-else
-            @click.stop.prevent = "startFollow(user)"
+            @click.stop.prevent="addFollowing(user.id)"
             type="button"
             class="btn btn-primary"
           >
@@ -42,6 +38,10 @@
 
 <script>
 import NavTabs from "./../components/NavTabs.vue";
+import usersAPI from "./../apis/users";
+import { Toast } from "./../utils/helpers";
+// import { statusCheckMethod } from "./../utils/mixins";
+
 const dummyData = {
   users: [
     {
@@ -86,6 +86,7 @@ const dummyData = {
   ],
 };
 export default {
+  // mixins: [statusCheckMethod],
   components: {
     NavTabs,
   },
@@ -95,19 +96,85 @@ export default {
     };
   },
   created() {
-    this.fetchUsers();
+    this.fetchTopUsers();
   },
   methods: {
-    fetchUsers() {
-      const { users } = dummyData;
-      this.users = users;
+    async fetchTopUsers() {
+      try {
+        const { data } = await usersAPI.getTopUsers();
+
+        this.users = data.users.map((user, ID) => ({
+          id: user.id,
+          name: user.name,
+          // 圖片為null，以假資料暫時代替
+          image: dummyData.users[ID].image,
+          followerCount: user.FollowerCount,
+          isFollowed: user.isFollowed,
+        }));
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得美食達人，請稍後再試",
+        });
+      }
     },
-    startFollow(user) {
-      user.isFollowed = true;
+    async addFollowing(userId) {
+      try {
+        const { data } = await usersAPI.addFollowing({ userId });
+
+        // statusCheck(data);
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.users = this.users.map((user) => {
+          if (user.id !== userId) {
+            return user;
+          } else {
+            return {
+              ...user,
+              followerCount: user.followerCount + 1,
+              isFollowed: true,
+            };
+          }
+        });
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法加入追蹤，請稍後再試",
+        });
+      }
     },
-    stopFollow(user) {
-      user.isFollowed = false;
+    async deleteFollowing(userId) {
+      try {
+        const { data } = await usersAPI.deleteFollowing({ userId });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.users = this.users.map((user) => {
+          if (user.id !== userId) {
+            return user;
+          } else {
+            return {
+              ...user,
+              followerCount: user.followerCount - 1,
+              isFollowed: false,
+            };
+          }
+        });
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取消追蹤，請稍後再試",
+        });
+      }
     },
+    // stopFollow(user) {
+    //   user.isFollowed = false;
+    // },
   },
 };
 </script>

@@ -31,282 +31,12 @@ import NavTabs from "./../components/NavTabs.vue";
 import RestaurantCard from "./../components/RestaurantCard.vue";
 import RestaurantsNavPills from "./../components/RestaurantsNavPills.vue";
 import RestaurantsPagination from "./../components/RestaurantsPagination.vue";
+// STEP 1：透過 import 匯入剛剛撰寫好用來呼叫 API 的方法
+import restaurantsAPI from "./../apis/restaurants";
+import { Toast } from "./../utils/helpers";
 
-const dummyData = {
-  restaurants: [
-    {
-      id: 1,
-      name: "Delia Nikolaus",
-      tel: "1-233-571-4809",
-      address: "0352 Dibbert Valleys",
-      opening_hours: "08:00",
-      description: "Fuga dolores autem officia odit corporis. Quam acc",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=83.16462311027261",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 2,
-      Category: {
-        id: 2,
-        name: "日本料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 2,
-      name: "Dr. Kadin Koepp",
-      tel: "1-509-857-3760",
-      address: "204 Karolann Path",
-      opening_hours: "08:00",
-      description: "cupiditate nihil aut",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=67.07619689497636",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 4,
-      Category: {
-        id: 4,
-        name: "墨西哥料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 3,
-      name: "Colin Fahey IV",
-      tel: "1-872-768-5095",
-      address: "148 Champlin Skyway",
-      opening_hours: "08:00",
-      description: "Fugiat facilis tenetur eveniet magnam vero facilis",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=93.15913899043977",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 3,
-      Category: {
-        id: 3,
-        name: "義大利料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 4,
-      name: "Virgil Prohaska",
-      tel: "458-545-4402",
-      address: "22918 Schamberger Knolls",
-      opening_hours: "08:00",
-      description: "laudantium rerum velit",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=92.93308817007764",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 4,
-      Category: {
-        id: 4,
-        name: "墨西哥料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 5,
-      name: "Rigoberto Ritchie",
-      tel: "(878) 816-8296",
-      address: "4270 Funk Spring",
-      opening_hours: "08:00",
-      description: "Quasi sint hic atque ratione. Voluptatem expedita ",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=60.10074255928581",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 1,
-      Category: {
-        id: 1,
-        name: "中式料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 6,
-      name: "Mrs. Sammie Hermiston",
-      tel: "(207) 067-9529 x190",
-      address: "161 Troy Heights",
-      opening_hours: "08:00",
-      description: "Magni voluptates provident. Ullam nemo voluptatibu",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=3.803164348225674",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 2,
-      Category: {
-        id: 2,
-        name: "日本料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 7,
-      name: "Izabella Armstrong PhD",
-      tel: "865-547-3674 x00312",
-      address: "99879 Tanya Isle",
-      opening_hours: "08:00",
-      description: "Eos quam enim aut et.\nEsse aut quia voluptate nesc",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=24.65311294775352",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 4,
-      Category: {
-        id: 4,
-        name: "墨西哥料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 8,
-      name: "Judge Nitzsche",
-      tel: "095.297.0111 x668",
-      address: "49091 Beer Court",
-      opening_hours: "08:00",
-      description: "Consequuntur ut consequatur dolorum incidunt sed i",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=37.51125050429622",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 4,
-      Category: {
-        id: 4,
-        name: "墨西哥料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 9,
-      name: "Justen Bednar",
-      tel: "(974) 201-4185 x74265",
-      address: "569 Bartell Spring",
-      opening_hours: "08:00",
-      description: "Labore placeat facere aliquid. Repellat error non ",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=62.300304085783424",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 1,
-      Category: {
-        id: 1,
-        name: "中式料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-    {
-      id: 10,
-      name: "Javier Lebsack",
-      tel: "862.530.5943 x991",
-      address: "19204 Olen Tunnel",
-      opening_hours: "08:00",
-      description: "Magnam inventore repellat totam facilis autem aut ",
-      image:
-        "https://loremflickr.com/320/240/restaurant,food/?random=61.51247227610506",
-      viewCounts: 0,
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-      CategoryId: 1,
-      Category: {
-        id: 1,
-        name: "中式料理",
-        createdAt: "2022-01-29T16:37:28.000Z",
-        updatedAt: "2022-01-29T16:37:28.000Z",
-      },
-      isFavorited: false,
-      isLiked: false,
-    },
-  ],
-  categories: [
-    {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-    {
-      id: 2,
-      name: "日本料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-    {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-    {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-    {
-      id: 5,
-      name: "素食料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-    {
-      id: 6,
-      name: "美式料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-    {
-      id: 7,
-      name: "複合式料理",
-      createdAt: "2022-01-29T16:37:28.000Z",
-      updatedAt: "2022-01-29T16:37:28.000Z",
-    },
-  ],
-  categoryId: "",
-  page: 1,
-  totalPage: [1, 2, 3, 4, 5],
-  prev: 1,
-  next: 2,
-};
 export default {
-  name: 'Restaurants',
+  name: "Restaurants",
   components: {
     NavTabs,
     RestaurantCard,
@@ -325,26 +55,55 @@ export default {
     };
   },
   created() {
-    this.fetchRestaurants();
+    // STEP 3：在 created 的時候呼叫 fetchRestaurants 方法
+    const { page = '', categoryId = '' } = this.$route.query
+    this.fetchRestaurants({
+      queryPage: page,
+      queryCategoryId: categoryId,
+    });
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { page = "", categoryId = "" } = to.query;
+    this.fetchRestaurants({ queryPage: page, queryCategoryId: categoryId });
+    next();
   },
   methods: {
-    fetchRestaurants() {
-      const {
-        restaurants,
-        categories,
-        categoryId,
-        page,
-        totalPage,
-        prev,
-        next,
-      } = dummyData;
-      this.restaurants = restaurants;
-      this.categories = categories;
-      this.categoryId = categoryId;
-      this.currentPage = page;
-      this.totalPage = totalPage;
-      this.prevPage = prev;
-      this.nextPage = next;
+    // STEP 2：將 fetchRestaurants 改成 async...await 的語法
+    // 並且可以帶入參數 page 與 categoryId
+    // 呼叫 API 後取得 response
+    async fetchRestaurants({ queryPage, queryCategoryId }) {
+      try {
+        const response = await restaurantsAPI.getRestaurants({
+          page: queryPage,
+          categoryId: queryCategoryId,
+        });
+
+        console.log(response.data);
+        // STEP 2：透過解構賦值，將所需要的資料從 response.data 取出
+        const {
+          restaurants,
+          categories,
+          categoryId,
+          page,
+          totalPage,
+          prev,
+          next,
+        } = response.data;
+
+        // STEP 3：將從伺服器取得的 data 帶入 Vue 內
+        this.restaurants = restaurants;
+        this.categories = categories;
+        this.categoryId = categoryId;
+        this.currentPage = page;
+        this.totalPage = totalPage;
+        this.prevPage = prev;
+        this.nextPage = next;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得餐廳資料，請稍後再試",
+        });
+      }
     },
   },
 };
